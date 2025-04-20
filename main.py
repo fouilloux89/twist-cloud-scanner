@@ -3,7 +3,7 @@ from tvDatafeed import TvDatafeed, Interval
 import pandas_ta as ta
 
 app = Flask(__name__)
-tv = TvDatafeed()
+tv = TvDatafeed()  # ou TvDatafeed("email", "pass")
 
 symbols = [
     ('MGC1!', 'COMEX'),
@@ -25,6 +25,10 @@ timeframes = {
     '1d': Interval.in_daily
 }
 
+@app.route("/")
+def home():
+    return "<h2>Twist Scanner en ligne 🚀</h2><p><a href='/scan'>Lancer le scan</a></p>"
+
 def detect_twist(df):
     ichimoku = ta.ichimoku(df['high'], df['low'])[0]
     spanA = ichimoku['ISA_9']
@@ -37,18 +41,21 @@ def detect_twist(df):
 
 @app.route("/scan")
 def scan_all():
-    results = []
-    for sym, exch in symbols:
-        for tf_name, tf in timeframes.items():
-            try:
-                df = tv.get_hist(sym, exchange=exch, interval=tf, n_bars=200)
-                if df is not None and detect_twist(df):
-                    results.append(f"🌀 Twist détecté sur {sym} ({exch}) en {tf_name}")
-            except Exception as e:
-                results.append(f"⚠️ Erreur sur {sym} {tf_name}: {e}")
-    if not results:
-        return "🔍 Aucun Twist détecté sur les symboles et timeframes."
-    return "<br>".join(results)
+    try:
+        results = []
+        for sym, exch in symbols:
+            for tf_name, tf in timeframes.items():
+                try:
+                    df = tv.get_hist(sym, exchange=exch, interval=tf, n_bars=200)
+                    if df is not None and detect_twist(df):
+                        results.append(f"🌀 Twist détecté sur {sym} ({exch}) en {tf_name}")
+                except Exception as e:
+                    results.append(f"⚠️ Erreur sur {sym} {tf_name}: {e}")
+        if not results:
+            return "🔍 Aucun Twist détecté sur les symboles et timeframes."
+        return "<br>".join(results)
+    except Exception as e:
+        return f"<strong>Erreur générale :</strong> {e}"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
