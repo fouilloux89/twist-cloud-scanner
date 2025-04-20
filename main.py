@@ -41,6 +41,7 @@ def detect_twist(df):
 
 @app.route("/scan")
 def scan_all():
+    print("🧪 La route /scan est appelée !")  # <-- Ajout ici
     try:
         results = []
         for sym, exch in symbols:
