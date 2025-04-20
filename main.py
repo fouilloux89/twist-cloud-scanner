@@ -1,11 +1,20 @@
 from flask import Flask
 import os
 
+# Exemple simple de fonction scanner()
+def scanner():
+    return "Scan terminé avec succès."
+
 app = Flask(__name__)
 
 @app.route('/')
 def hello():
     return "Twist Scanner en ligne 🚀"
+
+@app.route('/scan')
+def lancer_scan():
+    resultat = scanner()
+    return f"Résultat du scan : {resultat}"
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
