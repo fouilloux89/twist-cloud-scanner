@@ -1,10 +1,12 @@
+from flask import Flask
+import os
 
-from config import SYMBOLS, TIMEFRAMES
-from twist_utils import check_twist_on
+app = Flask(__name__)
 
-if __name__ == "__main__":
-    for symbol in SYMBOLS:
-        for tf in TIMEFRAMES:
-            found = check_twist_on(symbol, tf)
-            if found:
-                print(f"🟢 Twist détecté : {symbol} @ {tf}")
+@app.route('/')
+def hello():
+    return "Twist Scanner en ligne 🚀"
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
